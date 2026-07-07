@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+dist
+.env
+.env.local
+*.db
+*.db-journal
+coverage
+vercel.json
+tsconfig.tsbuildinfo
+screenshots

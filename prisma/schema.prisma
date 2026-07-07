@@ -1,0 +1,235 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  INVESTOR
+  ADMIN
+  OPERATOR
+}
+
+enum PropertyStatus {
+  DRAFT
+  FUNDING
+  ACTIVE
+  SOLD
+  ARCHIVED
+}
+
+enum UnitStatus {
+  AVAILABLE
+  RESERVED
+  FUNDED
+  RENTED
+  SOLD
+}
+
+enum OpportunityStatus {
+  DRAFT
+  OPEN
+  FUNDED
+  CLOSED
+  CANCELLED
+}
+
+enum InvestmentStatus {
+  PLEDGED
+  CONFIRMED
+  CANCELLED
+  EXITED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+}
+
+enum DocumentType {
+  PROPERTY_DOC
+  INVESTOR_REPORT
+  LEGAL
+  FINANCIAL
+  TAX
+}
+
+enum TransactionType {
+  DEPOSIT
+  INVESTMENT_PAYMENT
+  RENT_DISTRIBUTION
+  PLATFORM_FEE
+  REFUND
+}
+
+enum TransactionStatus {
+  SIMULATED
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id              String        @id @default(cuid())
+  email           String        @unique
+  name            String
+  role            UserRole      @default(INVESTOR)
+  phone           String?
+  country         String?
+  kycVerified     Boolean       @default(false)
+  simulatedWallet Decimal       @default(0)
+  investments     Investment[]
+  rentalLeads     RentalLead[]
+  transactions    Transaction[]
+  documents       Document[]    @relation("UserDocuments")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Property {
+  id                String        @id @default(cuid())
+  slug              String        @unique
+  title             String
+  description       String
+  address           String
+  city              String
+  country           String
+  status            PropertyStatus @default(DRAFT)
+  totalValue        Decimal
+  currency          String        @default("USD")
+  annualYieldTarget Float?
+  occupancyRate     Float?
+  imageUrl          String?
+  units             Unit[]
+  opportunities     Opportunity[]
+  rentalLeads       RentalLead[]
+  leases            Lease[]
+  documents         Document[]
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+model Unit {
+  id          String     @id @default(cuid())
+  propertyId  String
+  property    Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  code        String
+  floor       String?
+  bedrooms    Int?
+  bathrooms   Int?
+  squareMeters Float?
+  status      UnitStatus @default(AVAILABLE)
+  targetRent  Decimal?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@unique([propertyId, code])
+}
+
+model Opportunity {
+  id                  String             @id @default(cuid())
+  propertyId          String
+  property            Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  title               String
+  summary             String
+  status              OpportunityStatus  @default(DRAFT)
+  targetAmount        Decimal
+  fundedAmount        Decimal            @default(0)
+  sharePrice          Decimal
+  minInvestment       Decimal
+  expectedAnnualYield Float?
+  opensAt             DateTime?
+  closesAt            DateTime?
+  investments         Investment[]
+  transactions        Transaction[]
+  documents           Document[]
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+}
+
+model Investment {
+  id            String           @id @default(cuid())
+  userId        String
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunityId String
+  opportunity   Opportunity      @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  amount        Decimal
+  shares        Int
+  status        InvestmentStatus @default(PLEDGED)
+  signedAt      DateTime?
+  transactions  Transaction[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+}
+
+model RentalLead {
+  id          String     @id @default(cuid())
+  propertyId  String
+  property    Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  userId      String?
+  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name        String
+  email       String
+  phone       String?
+  message     String?
+  status      LeadStatus @default(NEW)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Lease {
+  id          String    @id @default(cuid())
+  propertyId  String
+  property    Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  tenantName  String
+  tenantEmail String?
+  monthlyRent Decimal
+  startsAt    DateTime
+  endsAt      DateTime?
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Document {
+  id            String       @id @default(cuid())
+  propertyId    String?
+  property      Property?    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  opportunityId String?
+  opportunity   Opportunity? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  userId        String?
+  user          User?        @relation("UserDocuments", fields: [userId], references: [id], onDelete: SetNull)
+  title         String
+  type          DocumentType
+  url           String
+  period        String?
+  publishedAt   DateTime     @default(now())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model Transaction {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  investmentId  String?
+  investment    Investment?       @relation(fields: [investmentId], references: [id], onDelete: SetNull)
+  opportunityId String?
+  opportunity   Opportunity?      @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  type          TransactionType
+  status        TransactionStatus @default(SIMULATED)
+  amount        Decimal
+  currency      String            @default("USD")
+  provider      String            @default("simulator")
+  providerRef   String?
+  metadata      String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
