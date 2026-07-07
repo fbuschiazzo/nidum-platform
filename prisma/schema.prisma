@@ -76,26 +76,44 @@ enum TransactionStatus {
   REFUNDED
 }
 
+enum ParticipationListingStatus {
+  OPEN
+  ACCEPTED
+  CANCELLED
+  EXPIRED
+}
+
+enum ParticipationOfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
 model User {
-  id              String        @id @default(cuid())
-  email           String        @unique
-  name            String
-  role            UserRole      @default(INVESTOR)
-  phone           String?
-  country         String?
-  kycVerified     Boolean       @default(false)
-  simulatedWallet Decimal       @default(0)
-  investments     Investment[]
-  rentalLeads     RentalLead[]
-  transactions    Transaction[]
-  documents       Document[]    @relation("UserDocuments")
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id                    String                 @id @default(cuid())
+  email                 String                 @unique
+  username              String?                @unique
+  password              String?
+  name                  String
+  role                  UserRole               @default(INVESTOR)
+  phone                 String?
+  country               String?
+  kycVerified           Boolean                @default(false)
+  simulatedWallet       Decimal                @default(0)
+  investments           Investment[]
+  participationListings ParticipationListing[]
+  participationOffers   ParticipationOffer[]
+  rentalLeads           RentalLead[]
+  transactions          Transaction[]
+  documents             Document[]             @relation("UserDocuments")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
 }
 
 model Property {
-  id                String        @id @default(cuid())
-  slug              String        @unique
+  id                String         @id @default(cuid())
+  slug              String         @unique
   title             String
   description       String
   address           String
@@ -103,7 +121,7 @@ model Property {
   country           String
   status            PropertyStatus @default(DRAFT)
   totalValue        Decimal
-  currency          String        @default("USD")
+  currency          String         @default("USD")
   annualYieldTarget Float?
   occupancyRate     Float?
   imageUrl          String?
@@ -112,36 +130,36 @@ model Property {
   rentalLeads       RentalLead[]
   leases            Lease[]
   documents         Document[]
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 }
 
 model Unit {
-  id          String     @id @default(cuid())
-  propertyId  String
-  property    Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  code        String
-  floor       String?
-  bedrooms    Int?
-  bathrooms   Int?
+  id           String     @id @default(cuid())
+  propertyId   String
+  property     Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  code         String
+  floor        String?
+  bedrooms     Int?
+  bathrooms    Int?
   squareMeters Float?
-  status      UnitStatus @default(AVAILABLE)
-  targetRent  Decimal?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  status       UnitStatus @default(AVAILABLE)
+  targetRent   Decimal?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
   @@unique([propertyId, code])
 }
 
 model Opportunity {
-  id                  String             @id @default(cuid())
+  id                  String            @id @default(cuid())
   propertyId          String
-  property            Property           @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  property            Property          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   title               String
   summary             String
-  status              OpportunityStatus  @default(DRAFT)
+  status              OpportunityStatus @default(DRAFT)
   targetAmount        Decimal
-  fundedAmount        Decimal            @default(0)
+  fundedAmount        Decimal           @default(0)
   sharePrice          Decimal
   minInvestment       Decimal
   expectedAnnualYield Float?
@@ -150,38 +168,75 @@ model Opportunity {
   investments         Investment[]
   transactions        Transaction[]
   documents           Document[]
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
 }
 
 model Investment {
-  id            String           @id @default(cuid())
+  id            String                 @id @default(cuid())
   userId        String
-  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   opportunityId String
-  opportunity   Opportunity      @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunity   Opportunity            @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
   amount        Decimal
   shares        Int
-  status        InvestmentStatus @default(PLEDGED)
+  status        InvestmentStatus       @default(PLEDGED)
   signedAt      DateTime?
+  listings      ParticipationListing[]
   transactions  Transaction[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  createdAt     DateTime               @default(now())
+  updatedAt     DateTime               @updatedAt
+}
+
+model ParticipationListing {
+  id           String                     @id @default(cuid())
+  investmentId String
+  investment   Investment                 @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  sellerId     String
+  seller       User                       @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  percentage   Float
+  shares       Int
+  askingPrice  Decimal
+  status       ParticipationListingStatus @default(OPEN)
+  expiresAt    DateTime?
+  offers       ParticipationOffer[]
+  createdAt    DateTime                   @default(now())
+  updatedAt    DateTime                   @updatedAt
+
+  @@index([investmentId, status])
+  @@index([sellerId, status])
+}
+
+model ParticipationOffer {
+  id         String                   @id @default(cuid())
+  listingId  String
+  listing    ParticipationListing     @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyerId    String
+  buyer      User                     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  percentage Float
+  amount     Decimal
+  message    String?
+  status     ParticipationOfferStatus @default(PENDING)
+  createdAt  DateTime                 @default(now())
+  updatedAt  DateTime                 @updatedAt
+
+  @@index([listingId, status])
+  @@index([buyerId, status])
 }
 
 model RentalLead {
-  id          String     @id @default(cuid())
-  propertyId  String
-  property    Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  userId      String?
-  user        User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
-  name        String
-  email       String
-  phone       String?
-  message     String?
-  status      LeadStatus @default(NEW)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id         String     @id @default(cuid())
+  propertyId String
+  property   Property   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?      @relation(fields: [userId], references: [id], onDelete: SetNull)
+  name       String
+  email      String
+  phone      String?
+  message    String?
+  status     LeadStatus @default(NEW)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model Lease {

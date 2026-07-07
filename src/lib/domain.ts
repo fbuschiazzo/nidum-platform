@@ -47,6 +47,14 @@ export function decimal(value: unknown, field: string) {
   return new Prisma.Decimal(parsed);
 }
 
+export function percentage(value: unknown, field: string) {
+  const parsed = typeof value === "number" || typeof value === "string" ? Number(value) : NaN;
+  if (!Number.isFinite(parsed) || parsed <= 0 || parsed > 100) {
+    throw new Error(`${field} must be a number greater than 0 and up to 100`);
+  }
+  return parsed;
+}
+
 export function optionalNumber(value: unknown) {
   if (value === undefined || value === null || value === "") return undefined;
   const parsed = Number(value);

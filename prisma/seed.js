@@ -5,9 +5,16 @@ const prisma = new PrismaClient();
 async function main() {
   const admin = await prisma.user.upsert({
     where: { email: "admin@fraccional.dev" },
-    update: {},
+    update: {
+      username: "admin",
+      password: "admin",
+      role: "ADMIN",
+      kycVerified: true,
+    },
     create: {
       email: "admin@fraccional.dev",
+      username: "admin",
+      password: "admin",
       name: "Admin Plataforma",
       role: "ADMIN",
       country: "UY",
@@ -18,9 +25,15 @@ async function main() {
 
   const investor = await prisma.user.upsert({
     where: { email: "inversor.demo@fraccional.dev" },
-    update: {},
+    update: {
+      username: "inversor",
+      password: "demo",
+      kycVerified: true,
+    },
     create: {
       email: "inversor.demo@fraccional.dev",
+      username: "inversor",
+      password: "demo",
       name: "Inversor Demo",
       role: "INVESTOR",
       phone: "+598 99 000 000",
@@ -94,6 +107,24 @@ async function main() {
         signedAt: new Date(),
       },
     }));
+
+  const existingListing = await prisma.participationListing.findFirst({
+    where: { investmentId: investment.id, sellerId: investor.id, status: "OPEN" },
+  });
+
+  if (!existingListing) {
+    await prisma.participationListing.create({
+      data: {
+        investmentId: investment.id,
+        sellerId: investor.id,
+        percentage: 25,
+        shares: 25,
+        askingPrice: 2600,
+        status: "OPEN",
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    });
+  }
 
   for (const transactionSeed of [
     {

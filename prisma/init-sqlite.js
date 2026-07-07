@@ -7,6 +7,8 @@ const statements = [
   `CREATE TABLE IF NOT EXISTS "User" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "email" TEXT NOT NULL,
+    "username" TEXT,
+    "password" TEXT,
     "name" TEXT NOT NULL,
     "role" TEXT NOT NULL DEFAULT 'INVESTOR',
     "phone" TEXT,
@@ -80,6 +82,37 @@ const statements = [
     CONSTRAINT "Investment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Investment_opportunityId_fkey" FOREIGN KEY ("opportunityId") REFERENCES "Opportunity" ("id") ON DELETE CASCADE ON UPDATE CASCADE
   )`,
+  `CREATE TABLE IF NOT EXISTS "ParticipationListing" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "investmentId" TEXT NOT NULL,
+    "sellerId" TEXT NOT NULL,
+    "percentage" REAL NOT NULL,
+    "shares" INTEGER NOT NULL,
+    "askingPrice" DECIMAL NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'OPEN',
+    "expiresAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "ParticipationListing_investmentId_fkey" FOREIGN KEY ("investmentId") REFERENCES "Investment" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "ParticipationListing_sellerId_fkey" FOREIGN KEY ("sellerId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+  )`,
+  `CREATE INDEX IF NOT EXISTS "ParticipationListing_investmentId_status_idx" ON "ParticipationListing"("investmentId", "status")`,
+  `CREATE INDEX IF NOT EXISTS "ParticipationListing_sellerId_status_idx" ON "ParticipationListing"("sellerId", "status")`,
+  `CREATE TABLE IF NOT EXISTS "ParticipationOffer" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "listingId" TEXT NOT NULL,
+    "buyerId" TEXT NOT NULL,
+    "percentage" REAL NOT NULL,
+    "amount" DECIMAL NOT NULL,
+    "message" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'PENDING',
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "ParticipationOffer_listingId_fkey" FOREIGN KEY ("listingId") REFERENCES "ParticipationListing" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "ParticipationOffer_buyerId_fkey" FOREIGN KEY ("buyerId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+  )`,
+  `CREATE INDEX IF NOT EXISTS "ParticipationOffer_listingId_status_idx" ON "ParticipationOffer"("listingId", "status")`,
+  `CREATE INDEX IF NOT EXISTS "ParticipationOffer_buyerId_status_idx" ON "ParticipationOffer"("buyerId", "status")`,
   `CREATE TABLE IF NOT EXISTS "RentalLead" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "propertyId" TEXT NOT NULL,
@@ -147,6 +180,17 @@ async function main() {
   for (const statement of statements) {
     await prisma.$executeRawUnsafe(statement);
   }
+
+  const userColumns = await prisma.$queryRawUnsafe(`PRAGMA table_info("User")`);
+  const userColumnNames = new Set(userColumns.map((column) => column.name));
+  if (!userColumnNames.has("username")) {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "username" TEXT`);
+  }
+  if (!userColumnNames.has("password")) {
+    await prisma.$executeRawUnsafe(`ALTER TABLE "User" ADD COLUMN "password" TEXT`);
+  }
+  await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "User_username_key" ON "User"("username")`);
+
   console.log("SQLite schema initialized");
 }
 

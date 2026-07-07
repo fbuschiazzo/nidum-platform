@@ -1,19 +1,21 @@
 import { adminMetrics, investorPortfolio, opportunities } from "./platform-data";
 import { OpportunityCard } from "./opportunity-card";
-import { Card, SectionHeader, StatCard } from "./ui";
+import { Card, InvestorActionPanel, SectionHeader, StatCard, VisualSimulator } from "./ui";
 
 export function InvestorDashboard() {
   return (
     <section className="dashboard-layout">
       <div className="dashboard-main">
         <SectionHeader eyebrow="Portal inversor" title="Panel de posicion consolidada">
-          Seguimiento de aportes, rentas, documentos y distribuciones por proyecto.
+          Un resumen simple para saber cuanto tenes invertido, que cobraste y que
+          podrias hacer hoy con tus participaciones.
         </SectionHeader>
         <div className="stats-grid">
           {investorPortfolio.map((item) => (
             <StatCard key={item.label} label={item.label} value={item.value} detail={item.delta} />
           ))}
         </div>
+        <VisualSimulator opportunity={opportunities[0]} />
         <Card className="table-card">
           <div className="table-header">
             <h3>Flujo de caja proyectado</h3>
@@ -31,6 +33,7 @@ export function InvestorDashboard() {
         </Card>
       </div>
       <aside className="dashboard-side">
+        <InvestorActionPanel />
         <Card>
           <h3>Acciones pendientes</h3>
           <ul className="clean-list">
@@ -38,6 +41,20 @@ export function InvestorDashboard() {
             <li>Actualizar constancia fiscal</li>
             <li>Revisar distribucion trimestral</li>
           </ul>
+        </Card>
+        <Card id="vender">
+          <h3>Venta secundaria</h3>
+          <p>
+            Publica una participacion para que otro inversor pueda comprarla. Nidum
+            muestra precio sugerido, rendimiento historico y documentos del activo.
+          </p>
+        </Card>
+        <Card id="ofertar">
+          <h3>Ofertas de entrada</h3>
+          <p>
+            Deja una oferta por monto y retorno esperado cuando una oportunidad esta
+            completa o con cupos limitados.
+          </p>
         </Card>
         <Card>
           <h3>Oportunidades sugeridas</h3>

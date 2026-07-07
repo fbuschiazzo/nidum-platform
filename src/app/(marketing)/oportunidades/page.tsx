@@ -1,20 +1,25 @@
 import { opportunities } from "@/components/platform-data";
 import { OpportunityCard } from "@/components/opportunity-card";
-import { LeadForm, PageShell, SectionHeader } from "@/components/ui";
+import { InvestorActionPanel, LeadForm, PageShell, SectionHeader, VisualSimulator } from "@/components/ui";
 
 export default function OpportunitiesPage() {
   return (
     <PageShell>
       <section className="section">
         <SectionHeader eyebrow="Marketplace" title="Oportunidades de inversion">
-          Seleccion curada de activos con tesis, documentacion, cronograma y
-          seguimiento posterior al cierre.
+          Seleccion curada de activos con explicacion simple, ticket minimo,
+          liquidez esperada y acciones para invertir, vender u ofertar.
         </SectionHeader>
         <div className="opportunity-grid">
           {opportunities.map((opportunity) => (
             <OpportunityCard key={opportunity.title} opportunity={opportunity} />
           ))}
         </div>
+      </section>
+
+      <section className="section split-section" id="simulador">
+        <VisualSimulator opportunity={opportunities[0]} />
+        <InvestorActionPanel />
       </section>
 
       <section className="section lead-band">

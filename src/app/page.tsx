@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { opportunities } from "@/components/platform-data";
 import { OpportunityCard } from "@/components/opportunity-card";
-import { LeadForm, PageShell, SectionHeader } from "@/components/ui";
+import { InvestorActionPanel, LeadForm, PageShell, SectionHeader, VisualSimulator } from "@/components/ui";
 
 export default function HomePage() {
   return (
@@ -11,21 +11,22 @@ export default function HomePage() {
           <p className="eyebrow">Nidum</p>
           <h1>Inverti en metros reales sin comprar una propiedad completa.</h1>
           <p>
-            Plataforma de inversion inmobiliaria fraccionada para acceder a renta,
-            plusvalia y reportes operativos con tickets bajos y gestion profesional.
+            Plataforma de inversion inmobiliaria fraccionada para acceder a renta y
+            plusvalia con tickets de USD 1.000 a 10.000, explicada para personas
+            que no viven del real estate.
           </p>
           <div className="hero-actions">
             <Link className="button button-dark" href="/oportunidades">
               Ver oportunidades
             </Link>
-            <Link className="button button-light" href="/alquileres">
-              Buscar alquiler
+            <Link className="button button-light" href="/oportunidades#simulador">
+              Simular ticket
             </Link>
           </div>
           <div className="trust-row" aria-label="Indicadores de confianza">
-            <span>Due diligence legal, tecnico y comercial por activo.</span>
-            <span>Reportes de renta, ocupacion y gastos por vehiculo.</span>
-            <span>Onboarding con KYC y trazabilidad documental.</span>
+            <span>Sabes que activo compras y por que podria rendir.</span>
+            <span>Ves renta, ocupacion, gastos y documentos en un solo lugar.</span>
+            <span>Podes invertir, vender u ofertar sin aprender jerga financiera.</span>
           </div>
         </div>
         <div className="hero-panel" aria-label="Resumen de plataforma">
@@ -45,7 +46,7 @@ export default function HomePage() {
                 retorno objetivo
               </span>
               <span>
-                <strong>USD 500</strong>
+                <strong>USD 1.000</strong>
                 ticket minimo
               </span>
             </div>
@@ -72,14 +73,19 @@ export default function HomePage() {
 
       <section className="section">
         <SectionHeader eyebrow="Marketplace" title="Oportunidades de inversion">
-          Seleccion curada de activos con tesis, documentacion, cronograma y
-          seguimiento posterior al cierre.
+          Cada ficha muestra en palabras simples que se compra, cual es el plazo,
+          como se cobra y que alternativas hay si queres salir.
         </SectionHeader>
         <div className="opportunity-grid">
           {opportunities.map((opportunity) => (
             <OpportunityCard key={opportunity.title} opportunity={opportunity} />
           ))}
         </div>
+      </section>
+
+      <section className="section split-section">
+        <VisualSimulator opportunity={opportunities[0]} />
+        <InvestorActionPanel opportunity={opportunities[0]} />
       </section>
 
       <section className="section">

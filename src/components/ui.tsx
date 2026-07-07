@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { brand } from "./platform-data";
+import { brand, simulatorTickets, type Opportunity } from "./platform-data";
 
 type CardProps = {
   children: ReactNode;
   className?: string;
+  id?: string;
 };
 
 export function Header() {
@@ -31,7 +32,7 @@ export function Header() {
           </Link>
         ))}
       </nav>
-      <Link className="button button-dark" href="/inversores">
+      <Link className="button button-dark" href="/login">
         Entrar
       </Link>
     </header>
@@ -65,8 +66,12 @@ export function SectionHeader({
   );
 }
 
-export function Card({ children, className = "" }: CardProps) {
-  return <article className={`card ${className}`}>{children}</article>;
+export function Card({ children, className = "", id }: CardProps) {
+  return (
+    <article className={`card ${className}`} id={id}>
+      {children}
+    </article>
+  );
 }
 
 export function StatCard({
@@ -83,6 +88,65 @@ export function StatCard({
       <span>{label}</span>
       <strong>{value}</strong>
       {detail ? <small>{detail}</small> : null}
+    </Card>
+  );
+}
+
+export function VisualSimulator({ opportunity }: { opportunity?: Opportunity }) {
+  const target = opportunity?.targetReturn ?? "8.4%";
+  const annualRate = Number.parseFloat(target) / 100;
+
+  return (
+    <section className="simulator-card" aria-label="Simulador visual de inversion">
+      <div>
+        <p className="eyebrow">Simulador visual</p>
+        <h3>Proba un ticket antes de hablar con un asesor</h3>
+        <p>
+          Los valores son estimativos y sirven para entender ordenes de magnitud,
+          no como promesa de rendimiento.
+        </p>
+      </div>
+      <div className="ticket-ladder">
+        {simulatorTickets.map((ticket) => {
+          const yearly = Math.round(ticket * annualRate);
+          const quarterly = Math.round(yearly / 4);
+
+          return (
+            <div className="ticket-option" key={ticket}>
+              <span>Ticket</span>
+              <strong>USD {ticket.toLocaleString("en-US")}</strong>
+              <div className="ticket-bar">
+                <span style={{ width: `${Math.min(100, ticket / 100)}%` }} />
+              </div>
+              <small>Renta objetivo aprox. USD {quarterly} por trimestre</small>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+export function InvestorActionPanel({ opportunity }: { opportunity?: Opportunity }) {
+  return (
+    <Card className="action-panel" id="invertir">
+      <p className="eyebrow">Acciones</p>
+      <h3>{opportunity ? `Operar ${opportunity.title}` : "Opera tus participaciones"}</h3>
+      <p>
+        Inverti en una ronda abierta, publica una venta secundaria o deja una oferta
+        cuando quieras entrar sin esperar nuevos cupos.
+      </p>
+      <div className="action-grid">
+        <Link className="button button-dark" href="/inversores">
+          Invertir
+        </Link>
+        <Link className="button button-light" href="/inversores#vender">
+          Vender
+        </Link>
+        <Link className="button button-light" href="/inversores#ofertar">
+          Ofertar
+        </Link>
+      </div>
     </Card>
   );
 }
@@ -104,7 +168,7 @@ export function LeadForm({ context }: { context: "investment" | "rental" }) {
         {isRental ? "Zona de interes" : "Monto estimado"}
         <input
           name="intent"
-          placeholder={isRental ? "Pocitos, Centro, Punta del Este" : "USD 500 - 25.000"}
+          placeholder={isRental ? "Pocitos, Centro, Punta del Este" : "USD 1.000 - 10.000"}
         />
       </label>
       <label>
