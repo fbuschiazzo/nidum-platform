@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { brand, simulatorTickets, type Opportunity } from "./platform-data";
 
+export { LeadForm } from "./lead-form";
+
 type CardProps = {
   children: ReactNode;
   className?: string;
@@ -148,40 +150,5 @@ export function InvestorActionPanel({ opportunity }: { opportunity?: Opportunity
         </Link>
       </div>
     </Card>
-  );
-}
-
-export function LeadForm({ context }: { context: "investment" | "rental" }) {
-  const isRental = context === "rental";
-
-  return (
-    <form className="lead-form">
-      <label>
-        Nombre
-        <input name="name" placeholder="Tu nombre" />
-      </label>
-      <label>
-        Email
-        <input name="email" type="email" placeholder="nombre@email.com" />
-      </label>
-      <label>
-        {isRental ? "Zona de interes" : "Monto estimado"}
-        <input
-          name="intent"
-          placeholder={isRental ? "Pocitos, Centro, Punta del Este" : "USD 1.000 - 10.000"}
-        />
-      </label>
-      <label>
-        Comentarios
-        <textarea
-          name="message"
-          rows={4}
-          placeholder={isRental ? "Fecha de mudanza, garantia, ocupantes" : "Objetivo, plazo y perfil de riesgo"}
-        />
-      </label>
-      <button className="button button-dark" type="submit">
-        {isRental ? "Solicitar visita" : "Hablar con un asesor"}
-      </button>
-    </form>
   );
 }

@@ -1,7 +1,13 @@
 import { db } from "@/lib/db";
+import { demoStore } from "@/lib/demo-store";
 import { json, pagination, serverError } from "@/lib/domain";
 
 export async function GET(request: Request) {
+  if (process.env.VERCEL && !process.env.DATABASE_URL) {
+    const page = pagination(new URL(request.url).searchParams);
+    return json({ data: demoStore.investments(), ...page, source: "demo-store" });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const page = pagination(searchParams);
@@ -31,7 +37,11 @@ export async function GET(request: Request) {
 
     return json({ data: participations, ...page });
   } catch (error) {
+    if (process.env.VERCEL) {
+      console.error(error);
+      const page = pagination(new URL(request.url).searchParams);
+      return json({ data: demoStore.investments(), ...page, source: "demo-store" });
+    }
     return serverError(error);
   }
 }
-

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { demoStore } from "@/lib/demo-store";
 import { badRequest, decimal, json, pagination, readJson, requiredString, serverError } from "@/lib/domain";
 
 type CreateInvestmentBody = {
@@ -9,7 +10,17 @@ type CreateInvestmentBody = {
   simulatePayment?: boolean;
 };
 
+function demoInvestmentStatus(status: CreateInvestmentBody["status"], simulatePayment?: boolean) {
+  if (status === "CONFIRMED") return "CONFIRMED";
+  return simulatePayment ? "CONFIRMED" : "PLEDGED";
+}
+
 export async function GET(request: Request) {
+  if (process.env.VERCEL && !process.env.DATABASE_URL) {
+    const page = pagination(new URL(request.url).searchParams);
+    return json({ data: demoStore.investments(), ...page, source: "demo-store" });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const page = pagination(searchParams);
@@ -28,6 +39,11 @@ export async function GET(request: Request) {
     });
     return json({ data: investments, ...page });
   } catch (error) {
+    if (process.env.VERCEL) {
+      console.error(error);
+      const page = pagination(new URL(request.url).searchParams);
+      return json({ data: demoStore.investments(), ...page, source: "demo-store" });
+    }
     return serverError(error);
   }
 }
@@ -38,6 +54,16 @@ export async function POST(request: Request) {
     const opportunityId = requiredString(body.opportunityId, "opportunityId");
     const userId = requiredString(body.userId, "userId");
     const amount = decimal(body.amount, "amount");
+
+    if (process.env.VERCEL && !process.env.DATABASE_URL) {
+      const result = demoStore.createInvestment({
+        userId,
+        opportunityId,
+        amount: amount.toNumber(),
+        status: demoInvestmentStatus(body.status, body.simulatePayment),
+      });
+      return json({ data: result, source: "demo-store" }, { status: 201 });
+    }
 
     const result = await db.$transaction(async (tx) => {
       const opportunity = await tx.opportunity.findUniqueOrThrow({
@@ -89,6 +115,20 @@ export async function POST(request: Request) {
 
     return json({ data: result }, { status: 201 });
   } catch (error) {
+    if (process.env.VERCEL) {
+      try {
+        const body = await request.clone().json() as CreateInvestmentBody;
+        const result = demoStore.createInvestment({
+          userId: String(body.userId ?? "demo-admin"),
+          opportunityId: String(body.opportunityId ?? "cordel-pocitos"),
+          amount: Number(body.amount ?? 1000),
+          status: demoInvestmentStatus(body.status, body.simulatePayment),
+        });
+        return json({ data: result, source: "demo-store" }, { status: 201 });
+      } catch {
+        // Preserve validation error below.
+      }
+    }
     return error instanceof Error ? badRequest(error.message) : serverError(error);
   }
 }

@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { demoStore } from "@/lib/demo-store";
 import { badRequest, decimal, json, optionalNumber, optionalString, pagination, readJson, requiredString, serverError } from "@/lib/domain";
 
 type CreateUnitBody = {
@@ -13,6 +14,14 @@ type CreateUnitBody = {
 };
 
 export async function GET(request: Request) {
+  if (process.env.VERCEL && !process.env.DATABASE_URL) {
+    const page = pagination(new URL(request.url).searchParams);
+    const units = demoStore.properties().flatMap((property) =>
+      property.units.map((unit) => ({ ...unit, property }))
+    );
+    return json({ data: units, ...page, source: "demo-store" });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const page = pagination(searchParams);
@@ -27,6 +36,14 @@ export async function GET(request: Request) {
     });
     return json({ data: units, ...page });
   } catch (error) {
+    if (process.env.VERCEL) {
+      console.error(error);
+      const page = pagination(new URL(request.url).searchParams);
+      const units = demoStore.properties().flatMap((property) =>
+        property.units.map((unit) => ({ ...unit, property }))
+      );
+      return json({ data: units, ...page, source: "demo-store" });
+    }
     return serverError(error);
   }
 }
