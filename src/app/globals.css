@@ -838,7 +838,7 @@ p {
 
 .holding-row {
   display: grid;
-  grid-template-columns: minmax(180px, 1.2fr) repeat(3, minmax(120px, 0.8fr));
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 12px;
   align-items: stretch;
   border: 1px solid var(--line);
@@ -852,6 +852,10 @@ p {
   display: grid;
   gap: 5px;
   min-width: 0;
+}
+
+.holding-title {
+  grid-column: 1 / -1;
 }
 
 .holding-title strong {
@@ -1086,6 +1090,15 @@ p {
     align-items: start;
     background: linear-gradient(145deg, #10251f 0%, #174836 100%);
   }
+
+  .holding-row {
+    grid-template-columns: 1fr;
+  }
+
+  .holding-title {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1152,7 +1165,6 @@ p {
   }
 
   .cashflow-list div,
-  .holding-row,
   .admin-queue div {
     grid-template-columns: 1fr;
   }
@@ -1172,11 +1184,6 @@ p {
   .holding-row {
     gap: 10px;
     padding: 12px;
-  }
-
-  .holding-title {
-    border-bottom: 1px solid var(--line);
-    padding-bottom: 10px;
   }
 
   .hero-panel .card,
