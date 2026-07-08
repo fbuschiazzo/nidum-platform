@@ -1,3 +1,4 @@
+import { InvestorPreferences } from "@/components/investor-preferences";
 import { InvestorDashboard } from "@/components/dashboard";
 import { OpportunityCard } from "@/components/opportunity-card";
 import { opportunities } from "@/components/platform-data";
@@ -10,9 +11,12 @@ export default function InvestorsPage() {
         <InvestorDashboard />
       </section>
       <section className="section">
-        <SectionHeader eyebrow="Nuevas rondas" title="Invertir en unidades">
-          Elegi tickets de USD 1.000 a 10.000, revisa el caso en lenguaje claro y
-          reserva una participacion sin salir del portal.
+        <InvestorPreferences />
+      </section>
+      <section className="section">
+        <SectionHeader eyebrow="Segun tu perfil" title="Oportunidades para comparar">
+          Ajusta tus preferencias arriba y usa estas fichas para revisar detalle,
+          riesgo, plazo, salida y retorno objetivo antes de reservar.
         </SectionHeader>
         <div className="opportunity-grid">
           {opportunities.map((opportunity) => (

@@ -1,80 +1,49 @@
 import Link from "next/link";
+import { BeginnerInvestmentPlanner } from "@/components/beginner-investment-planner";
 import { opportunities } from "@/components/platform-data";
 import { OpportunityCard } from "@/components/opportunity-card";
-import { InvestorActionPanel, LeadForm, PageShell, SectionHeader, VisualSimulator } from "@/components/ui";
+import { LeadForm, PageShell, SectionHeader } from "@/components/ui";
 
 export default function HomePage() {
   return (
     <PageShell>
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Nidum</p>
-          <h1>Inverti en metros reales sin comprar una propiedad completa.</h1>
+          <p className="eyebrow">Empeza con USD 1.000</p>
+          <h1>Inverti en propiedades reales y cobra renta sin comprar un apartamento entero.</h1>
           <p>
-            Plataforma de inversion inmobiliaria fraccionada para acceder a renta y
-            plusvalia con tickets de USD 1.000 a 10.000, explicada para personas
-            que no viven del real estate.
+            Nidum esta pensado para personas que tienen algunos miles de dolares,
+            quieren mover esa plata y necesitan entender cuanto podrian cobrar,
+            que riesgo toman y como salir si necesitan liquidez.
           </p>
           <div className="hero-actions">
+            <Link className="button button-dark" href="#simulador">
+              Simular mi inversion
+            </Link>
             <Link className="button button-dark" href="/oportunidades">
               Ver oportunidades
             </Link>
-            <Link className="button button-light" href="/oportunidades#simulador">
-              Simular ticket
+            <Link className="button button-light" href="/login">
+              Crear perfil inversor
             </Link>
           </div>
           <div className="trust-row" aria-label="Indicadores de confianza">
-            <span>Sabes que activo compras y por que podria rendir.</span>
-            <span>Ves renta, ocupacion, gastos y documentos en un solo lugar.</span>
-            <span>Podes invertir, vender u ofertar sin aprender jerga financiera.</span>
+            <span>Ves cuanto pones y cuanto podrias recibir.</span>
+            <span>Entendes riesgos, plazos y salida antes de invertir.</span>
+            <span>Seguimiento privado con documentos, renta y proximos pagos.</span>
           </div>
         </div>
         <div className="hero-panel" aria-label="Resumen de plataforma">
-          <article className="card">
-            <div className="card-topline">
-              <span>En fondeo</span>
-              <small>Proyecto residencial</small>
-            </div>
-            <h3>Cordel Pocitos</h3>
-            <p>
-              Vehiculo residencial orientado a renta mensual con administracion de
-              inquilinos, mantenimiento y distribuciones automatizadas.
-            </p>
-            <div className="metric-row">
-              <span>
-                <strong>8.4%</strong>
-                retorno objetivo
-              </span>
-              <span>
-                <strong>USD 1.000</strong>
-                ticket minimo
-              </span>
-            </div>
-            <div className="progress-block">
-              <div>
-                <span>Fondeado</span>
-                <strong>72%</strong>
-              </div>
-              <div className="progress-track">
-                <span style={{ width: "72%" }} />
-              </div>
-            </div>
-          </article>
-          <article className="card">
-            <p className="eyebrow">Proxima distribucion</p>
-            <h3>USD 214 estimados</h3>
-            <p>
-              Panel inversor con flujo proyectado, documentos, eventos relevantes y
-              estado de cada participacion.
-            </p>
-          </article>
+          <BeginnerInvestmentPlanner compact />
         </div>
       </section>
 
+      <BeginnerInvestmentPlanner />
+
       <section className="section">
-        <SectionHeader eyebrow="Marketplace" title="Oportunidades de inversion">
-          Cada ficha muestra en palabras simples que se compra, cual es el plazo,
-          como se cobra y que alternativas hay si queres salir.
+        <SectionHeader eyebrow="Elegir sin saber de inversiones" title="Oportunidades ordenadas para decidir mejor">
+          No empezamos por tablas complejas. Cada oportunidad explica para quien es,
+          cuando podrias cobrar, que puede salir mal y como pensarias una salida.
         </SectionHeader>
         <div className="opportunity-grid">
           {opportunities.map((opportunity) => (
@@ -83,19 +52,36 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section split-section">
-        <VisualSimulator opportunity={opportunities[0]} />
-        <InvestorActionPanel opportunity={opportunities[0]} />
-      </section>
-
       <section className="section">
-        <SectionHeader eyebrow="Como funciona" title="Una operacion simple, pero controlada" />
+        <SectionHeader eyebrow="Como funciona" title="Invertir no deberia sentirse como saltar al vacio" />
         <div className="feature-grid">
           {[
-            ["Explora", "Compara proyectos por retorno, plazo, ubicacion y riesgo."],
-            ["Invierte", "Reserva participaciones y completa KYC desde el portal."],
-            ["Gestiona", "Accede a contratos, reportes, gastos y ocupacion."],
-            ["Cobra", "Recibe distribuciones y seguimiento de performance."],
+            ["Simula", "Pones un monto y ves escenarios conservador, base y optimista."],
+            ["Elegis", "Comparamos oportunidades segun renta, plazo, riesgo y salida."],
+            ["Invertis", "Reservas participacion, completas datos y firmas desde el portal."],
+            ["Cobra y segui", "Ves pagos, documentos, gastos, ocupacion y eventos relevantes."],
+          ].map(([title, text]) => (
+            <article className="card" key={title}>
+              <h3>{title}</h3>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section investor-trust-section">
+        <SectionHeader eyebrow="Antes de poner plata" title="Lo que un inversor principiante necesita ver claro">
+          Nidum muestra lo bueno y tambien lo incomodo: retornos no garantizados,
+          vacancia, gastos, liquidez y documentos.
+        </SectionHeader>
+        <div className="trust-explainer-grid">
+          {[
+            ["Que compro", "Una participacion economica vinculada a un activo inmobiliario identificado."],
+            ["Como cobro", "Rentas netas estimadas segun ocupacion, gastos, administracion y calendario."],
+            ["Que riesgo tomo", "Vacancia, mantenimiento, cambios de precio y salida no inmediata."],
+            ["Como salgo", "Publicando tu participacion en el mercado secundario cuando este habilitado."],
+            ["Que cobra Nidum", "Fees de administracion visibles antes de confirmar una inversion."],
+            ["Quien me ayuda", "Un asesor puede revisar tu perfil, dudas, documentos y horizonte."],
           ].map(([title, text]) => (
             <article className="card" key={title}>
               <h3>{title}</h3>
@@ -107,12 +93,11 @@ export default function HomePage() {
 
       <section className="section lead-band">
         <div>
-          <p className="eyebrow">Primer contacto</p>
-          <h2>Construimos confianza antes que volumen.</h2>
+          <p className="eyebrow">Primer paso</p>
+          <h2>Decinos cuanto queres invertir y te guiamos.</h2>
           <p>
-            La experiencia prioriza claridad, trazabilidad y una mirada sobria del
-            riesgo. Un asesor puede ayudarte a entender plazos, liquidez y estructura
-            legal antes de invertir.
+            Si nunca invertiste, la prioridad es entender antes de transferir. Te
+            mostramos oportunidades compatibles con tu monto, plazo y perfil de riesgo.
           </p>
         </div>
         <LeadForm context="investment" />

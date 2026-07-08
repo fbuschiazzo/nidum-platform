@@ -285,6 +285,13 @@ p {
   font-weight: 750;
 }
 
+.investor-fit {
+  border-left: 3px solid var(--accent);
+  padding-left: 12px;
+  color: var(--ink);
+  font-weight: 750;
+}
+
 .feature-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -345,6 +352,21 @@ p {
   font-weight: 800;
 }
 
+.plain-risk-box {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  border: 1px solid rgba(15, 94, 74, 0.16);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfaf7;
+}
+
+.plain-risk-box p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
 .card-actions,
 .action-grid {
   display: flex;
@@ -395,6 +417,155 @@ p {
   grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
   gap: 22px;
   align-items: stretch;
+}
+
+.beginner-planner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1fr);
+  gap: 22px;
+  align-items: start;
+  padding: clamp(48px, 8vw, 96px) clamp(20px, 4vw, 56px);
+  border-top: 1px solid var(--line);
+}
+
+.beginner-planner-compact {
+  grid-template-columns: 1fr;
+  padding: 0;
+  border-top: 0;
+}
+
+.beginner-planner-compact h2 {
+  font-size: clamp(1.65rem, 4vw, 2.4rem);
+}
+
+.planner-controls,
+.planner-result,
+.preference-form,
+.recommendation-detail,
+.preference-panel,
+.trust-explainer-grid,
+.beginner-detail-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.planner-controls {
+  align-self: stretch;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.planner-controls label,
+.preference-form label {
+  display: grid;
+  gap: 9px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.amount-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.amount-grid button,
+.planner-controls select,
+.preference-form input,
+.preference-form select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfaf7;
+  color: var(--ink);
+  padding: 0 14px;
+  font-weight: 800;
+}
+
+.amount-grid button {
+  cursor: pointer;
+}
+
+.amount-grid button.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.planner-result {
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+}
+
+.recommendation-card,
+.scenario-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.mini-metrics,
+.scenario-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mini-metrics span,
+.scenario-list span {
+  display: grid;
+  gap: 5px;
+  border-radius: 8px;
+  padding: 12px;
+  background: #f4f0e7;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.mini-metrics strong,
+.scenario-list strong {
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
+.scenario-list {
+  grid-template-columns: 1fr;
+}
+
+.preference-panel {
+  grid-template-columns: minmax(0, 0.8fr) minmax(300px, 0.6fr) minmax(340px, 0.9fr);
+  align-items: start;
+}
+
+.preference-form,
+.recommendation-detail {
+  padding: 20px;
+}
+
+.plain-explainer {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.trust-explainer-grid,
+.beginner-detail-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.trust-explainer-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.trust-explainer-grid .card,
+.beginner-detail-grid .card {
+  padding: 20px;
 }
 
 .simulator-card,
@@ -834,6 +1005,8 @@ p {
   .lead-band,
   .dashboard-layout,
   .split-section,
+  .beginner-planner,
+  .preference-panel,
   .detail-grid,
   .detail-layout,
   .opportunity-hero,
@@ -846,6 +1019,9 @@ p {
   .stats-grid,
   .feature-grid,
   .trust-row,
+  .planner-result,
+  .trust-explainer-grid,
+  .beginner-detail-grid,
   .projection-grid,
   .investor-action-grid,
   .secondary-grid {
@@ -916,6 +1092,10 @@ p {
   .stats-grid,
   .feature-grid,
   .trust-row,
+  .planner-result,
+  .trust-explainer-grid,
+  .beginner-detail-grid,
+  .mini-metrics,
   .ticket-ladder,
   .quick-amounts,
   .projection-grid,
@@ -931,6 +1111,12 @@ p {
   }
 
   .hero-panel .card,
+  .recommendation-card,
+  .scenario-card,
+  .preference-form,
+  .recommendation-detail,
+  .trust-explainer-grid .card,
+  .beginner-detail-grid .card,
   .opportunity-card,
   .stat-card,
   .table-card,

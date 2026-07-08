@@ -1,4 +1,4 @@
-import { adminMetrics, investorPortfolio, opportunities } from "./platform-data";
+import { adminMetrics, investorHoldings, investorPortfolio, opportunities } from "./platform-data";
 import { OpportunityCard } from "./opportunity-card";
 import { Card, InvestorActionPanel, SectionHeader, StatCard, VisualSimulator } from "./ui";
 
@@ -18,6 +18,25 @@ export function InvestorDashboard() {
         <VisualSimulator opportunity={opportunities[0]} />
         <Card className="table-card">
           <div className="table-header">
+            <h3>Mi cartera explicada</h3>
+            <span>Participaciones actuales</span>
+          </div>
+          <div className="holding-list">
+            {investorHoldings.map((holding) => (
+              <div key={holding.project}>
+                <span>
+                  <strong>{holding.project}</strong>
+                  USD {holding.amount.toLocaleString("en-US")} invertidos
+                </span>
+                <span>{holding.percentage}% del activo</span>
+                <span>USD {holding.estimatedMonthly}/mes estimado</span>
+                <small>{holding.status}</small>
+              </div>
+            ))}
+          </div>
+        </Card>
+        <Card className="table-card">
+          <div className="table-header">
             <h3>Flujo de caja proyectado</h3>
             <span>Actualizado 7 jul 2026</span>
           </div>
@@ -35,11 +54,19 @@ export function InvestorDashboard() {
       <aside className="dashboard-side">
         <InvestorActionPanel />
         <Card>
-          <h3>Acciones pendientes</h3>
+          <h3>Proximos pasos guiados</h3>
           <ul className="clean-list">
-            <li>Firmar anexo de Costa Serena</li>
-            <li>Actualizar constancia fiscal</li>
-            <li>Revisar distribucion trimestral</li>
+            <li>Completar perfil de riesgo para ordenar recomendaciones.</li>
+            <li>Revisar documentos y riesgos antes de reservar una nueva participacion.</li>
+            <li>Confirmar si queres priorizar renta mensual o valorizacion.</li>
+          </ul>
+        </Card>
+        <Card>
+          <h3>Alertas simples</h3>
+          <ul className="clean-list">
+            <li>Cordel Pocitos: renta estimada desde noviembre 2026.</li>
+            <li>Costa Serena: retorno potencial mayor, pero con estacionalidad.</li>
+            <li>Tu salida no es inmediata: revisa liquidez antes de invertir.</li>
           </ul>
         </Card>
         <Card id="vender">

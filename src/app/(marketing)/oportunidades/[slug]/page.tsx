@@ -58,6 +58,20 @@ export default async function OpportunityDetailPage({
         </aside>
       </section>
 
+      <section className="section beginner-detail-grid">
+        {[
+          ["Que podrias cobrar", opportunity.payoutPlain],
+          ["Que puede salir mal", opportunity.simpleRisk],
+          ["Como podrias salir", opportunity.exitPlain],
+          ["Que cobra Nidum", opportunity.feeNote],
+        ].map(([title, text]) => (
+          <article className="card" key={title}>
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </article>
+        ))}
+      </section>
+
       <section className="section">
         <InvestmentSimulator opportunity={opportunity} />
       </section>

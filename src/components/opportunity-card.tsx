@@ -9,11 +9,12 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
         <img src={opportunity.image} alt={`Imagen de ${opportunity.title}`} className="opportunity-image" />
       </Link>
       <div className="card-topline">
-        <span>{opportunity.status}</span>
+        <span>{opportunity.beginnerLabel}</span>
         <small>{opportunity.location}</small>
       </div>
       <h3>{opportunity.title}</h3>
       <p className="plain-goal">{opportunity.plainGoal}</p>
+      <p className="investor-fit">{opportunity.bestFor}</p>
       <p>{opportunity.summary}</p>
       <div className="metric-row">
         <span>
@@ -30,9 +31,15 @@ export function OpportunityCard({ opportunity }: { opportunity: Opportunity }) {
         </span>
       </div>
       <div className="risk-strip" aria-label="Resumen para inversor">
+        <span>{opportunity.status}</span>
         <span>Riesgo {opportunity.risk}</span>
         <span>{opportunity.occupancy}</span>
         <span>{opportunity.nextPayout}</span>
+      </div>
+      <div className="plain-risk-box">
+        <strong>Antes de invertir</strong>
+        <p>{opportunity.simpleRisk}</p>
+        <p>{opportunity.exitPlain}</p>
       </div>
       <div className="progress-block" aria-label={`Fondeado ${opportunity.funded}%`}>
         <div>
