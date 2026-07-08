@@ -809,6 +809,7 @@ p {
 }
 
 .cashflow-list,
+.holding-list,
 .admin-queue {
   display: grid;
   gap: 1px;
@@ -819,6 +820,12 @@ p {
   background: var(--line);
 }
 
+.holding-list {
+  gap: 12px;
+  border: 0;
+  background: transparent;
+}
+
 .cashflow-list div,
 .admin-queue div {
   display: grid;
@@ -827,6 +834,45 @@ p {
   align-items: center;
   padding: 14px;
   background: #fff;
+}
+
+.holding-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) repeat(3, minmax(120px, 0.8fr));
+  gap: 12px;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fff;
+}
+
+.holding-title,
+.holding-row span {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.holding-title strong {
+  font-size: 1.05rem;
+}
+
+.holding-title small,
+.holding-row small {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.holding-row span {
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #f7f5ef;
+  color: var(--ink);
+  font-weight: 850;
 }
 
 .clean-list {
@@ -1106,8 +1152,31 @@ p {
   }
 
   .cashflow-list div,
+  .holding-row,
   .admin-queue div {
     grid-template-columns: 1fr;
+  }
+
+  .table-header {
+    align-items: start;
+  }
+
+  .table-header h3 {
+    max-width: 180px;
+  }
+
+  .holding-list {
+    margin-top: 14px;
+  }
+
+  .holding-row {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .holding-title {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
   }
 
   .hero-panel .card,

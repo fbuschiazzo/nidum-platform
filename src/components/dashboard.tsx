@@ -23,14 +23,23 @@ export function InvestorDashboard() {
           </div>
           <div className="holding-list">
             {investorHoldings.map((holding) => (
-              <div key={holding.project}>
-                <span>
+              <div className="holding-row" key={holding.project}>
+                <div className="holding-title">
                   <strong>{holding.project}</strong>
-                  USD {holding.amount.toLocaleString("en-US")} invertidos
+                  <small>{holding.status}</small>
+                </div>
+                <span>
+                  <small>Invertido</small>
+                  USD {holding.amount.toLocaleString("en-US")}
                 </span>
-                <span>{holding.percentage}% del activo</span>
-                <span>USD {holding.estimatedMonthly}/mes estimado</span>
-                <small>{holding.status}</small>
+                <span>
+                  <small>Participacion</small>
+                  {holding.percentage}% del activo
+                </span>
+                <span>
+                  <small>Renta estimada</small>
+                  USD {holding.estimatedMonthly}/mes
+                </span>
               </div>
             ))}
           </div>
